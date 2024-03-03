@@ -20,7 +20,7 @@ class DataBase:
         self.connection.commit()
     
     def check_column_exist_value(self, table_name, column_name, check_value):
-        self.cursor.execute(f"SELECT * FROM {table_name} WHERE {column_name} = '{check_value}'")
+        self.cursor.execute(f"SELECT * FROM {table_name} WHERE {column_name} = {check_value}")
         result = self.cursor.fetchone()
         return result
 
