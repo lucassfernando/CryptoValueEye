@@ -11,7 +11,7 @@ headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/5
 def parse_float(val):
     return decimal.Decimal(val)
 
-r = requests.get('https://api.coinmarketcap.com/data-api/v3.1/cryptocurrency/historical?id=9000&interval=1h&convertId=2781', headers=headers)
+r = requests.get('https://api.coinmarketcap.com/data-api/v3.1/cryptocurrency/historical?id=16389&interval=1h&convertId=2781', headers=headers)
 
 
 if 'open' and 'close' in r.text:

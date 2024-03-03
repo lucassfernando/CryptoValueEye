@@ -25,9 +25,10 @@ def update_reference_db_coinmarketcap():
 
         cripto_id = cripto['id']
         check_cripto = db.check_column_exist_value('CRIPTOS_COINMARKETCAP', 'ID_COINMARKETCAP', cripto_id)
-        
+
         if check_cripto:
             
+            print(f"JÁ CADASTRADA: {cripto['name']}")
             continue
 
         else:
@@ -35,6 +36,6 @@ def update_reference_db_coinmarketcap():
             db.insert_data('CRIPTOS_COINMARKETCAP', 'NAME, SIGLE, ID_COINMARKETCAP', (cripto['name'], cripto['symbol'], cripto['id']))
             count += 1
             print(cripto['name'], count)
-            
+    
     print(f"TOTAL CADASTRADO: {count}")
 
