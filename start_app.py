@@ -31,6 +31,7 @@ def parse_float(val):
 
     return decimal.Decimal(val)
 
+
 def start_check(cripto_id):
 
     try:
@@ -40,8 +41,10 @@ def start_check(cripto_id):
         if 'open' and 'close' in request.text:
 
             json_converted = json.loads(request.text, parse_float=parse_float)
-            return_analyze = monitor_climb(json_converted, -1, 5.00, '1H')
-            print(return_analyze, cripto_id)
+            return_analyze = monitor_climb(json_converted, -1, 8.00, '1H')
+            
+            if return_analyze:
+                print(return_analyze, cripto_id)
 
     except Exception as erro:
 

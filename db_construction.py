@@ -33,4 +33,3 @@ def update_reference_db_coinmarketcap():
             db.insert_data('CRIPTOS_COINMARKETCAP', 'NAME, SYMBOL, ID_COINMARKETCAP', (cripto['name'], cripto['symbol'], cripto['id']))
             count += 1
     
-    
