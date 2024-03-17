@@ -5,6 +5,7 @@ import json
 import threading
 
 from sqlite_database_manager import DataBase
+from telegram_manager import BotTelegram
 
 
 
@@ -15,7 +16,7 @@ def monitor_climb(json, hours_ago, selected_percentage, return_text):
     high_percentage = percentage_calculated(float(opened_cripto_value), float(closed_cripto_value))
 
     if high_percentage >= selected_percentage:
-        return f'{return_text}: {high_percentage}'
+        return f'{return_text}: {"%.2f" % high_percentage}'
 
 
 def percentage_calculated(initial_value, final_value):
@@ -32,7 +33,7 @@ def parse_float(val):
     return decimal.Decimal(val)
 
 
-def start_check(cripto_id):
+def start_check(cripto_id, cripto_name):
 
     try:
 
@@ -41,10 +42,11 @@ def start_check(cripto_id):
         if 'open' and 'close' in request.text:
 
             json_converted = json.loads(request.text, parse_float=parse_float)
-            return_analyze = monitor_climb(json_converted, -1, 8.00, '1H')
+            return_analyze = monitor_climb(json_converted, -1, 10.00, '1H')
             
             if return_analyze:
-                print(return_analyze, cripto_id)
+                print(f"{cripto_name}\n{return_analyze}")
+                bot.send_message(-4148057761, f"TOKEN: {cripto_name}\n\n{return_analyze}")
 
     except Exception as erro:
 
@@ -53,9 +55,10 @@ def start_check(cripto_id):
 db = DataBase('CRIPTOS_INFO.db')
 all_cripto_data = db.consult_all_information('CRIPTOS_COINMARKETCAP')
 db.close()
+bot = BotTelegram()
 
 for information in all_cripto_data:
 
-    thread = threading.Thread(target=start_check, args=(information[2],))
+    thread = threading.Thread(target=start_check, args=(information[2], information[0],))
     thread.start()
     sleep(0.2)
