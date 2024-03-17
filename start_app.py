@@ -6,6 +6,7 @@ import threading
 
 from sqlite_database_manager import DataBase
 from telegram_manager import BotTelegram
+from db_construction import update_reference_db_coinmarketcap
 
 
 
@@ -16,8 +17,9 @@ def monitor_climb(json, hours_ago, selected_percentage, return_text):
     high_percentage = percentage_calculated(float(opened_cripto_value), float(closed_cripto_value))
 
     if high_percentage >= selected_percentage:
-        return f'{return_text}: {"%.2f" % high_percentage}'
-
+        return f'{return_text}: {"%.2f" % high_percentage}% ✅'
+    else:
+        return f'{return_text}: {"%.2f" % high_percentage}% ❌'
 
 def percentage_calculated(initial_value, final_value):
 
@@ -42,23 +44,33 @@ def start_check(cripto_id, cripto_name):
         if 'open' and 'close' in request.text:
 
             json_converted = json.loads(request.text, parse_float=parse_float)
-            return_analyze = monitor_climb(json_converted, -1, 10.00, '1H')
+
+            return_analyze_1h = monitor_climb(json_converted, -1, 10.00, '1H')
+            return_analyze_2h = monitor_climb(json_converted, -2, 20.00, '2H')
+            return_analyze_3h = monitor_climb(json_converted, -3, 30.00, '3H')
+            return_analyze_6h = monitor_climb(json_converted, -6, 55.00, '6H')
+            return_analyze_total = f'{return_analyze_1h}\n{return_analyze_2h}\n{return_analyze_3h}\n{return_analyze_6h}'
             
-            if return_analyze:
-                print(f"{cripto_name}\n{return_analyze}")
-                bot.send_message(-4148057761, f"TOKEN: {cripto_name}\n\n{return_analyze}")
+            if '✅' in return_analyze_total:
+
+                bot.send_message(-4148057761, f"TOKEN: {cripto_name}\n\n{return_analyze_total}")
 
     except Exception as erro:
 
         pass
 
-db = DataBase('CRIPTOS_INFO.db')
-all_cripto_data = db.consult_all_information('CRIPTOS_COINMARKETCAP')
-db.close()
 bot = BotTelegram()
 
-for information in all_cripto_data:
+while True:
 
-    thread = threading.Thread(target=start_check, args=(information[2], information[0],))
-    thread.start()
-    sleep(0.2)
+    update_reference_db_coinmarketcap()
+    
+    db = DataBase('CRIPTOS_INFO.db')
+    all_cripto_data = db.consult_all_information('CRIPTOS_COINMARKETCAP')
+    db.close()
+
+    for information in all_cripto_data:
+
+        thread = threading.Thread(target=start_check, args=(information[2], information[0],))
+        thread.start()
+        sleep(0.2)
