@@ -15,23 +15,29 @@ def db_model_coinmarketcap():
 def update_reference_db_coinmarketcap():
 
     db = DataBase('CRIPTOS_INFO.db')
-    request = requests.get('https://api.coinmarketcap.com/data-api/v3/cryptocurrency/listing?start=1&limit=30000')
-    request_json = json.loads(request.text)
-    count = 0
+    try:
 
-    for cripto in request_json['data']['cryptoCurrencyList']:
+        request = requests.get('https://api.coinmarketcap.com/data-api/v3/cryptocurrency/listing?start=1&limit=30000')
+        request_json = json.loads(request.text)
+        count = 0
 
-        cripto_id = cripto['id']
-        check_cripto = db.check_column_exist_value('CRIPTOS_COINMARKETCAP', 'ID_COINMARKETCAP', cripto_id)
+        for cripto in request_json['data']['cryptoCurrencyList']:
 
-        if check_cripto:
+            cripto_id = cripto['id']
+            check_cripto = db.check_column_exist_value('CRIPTOS_COINMARKETCAP', 'ID_COINMARKETCAP', cripto_id)
 
-            continue
+            if check_cripto:
 
-        else:
+                continue
 
-            db.insert_data('CRIPTOS_COINMARKETCAP', 'NAME, SYMBOL, ID_COINMARKETCAP', (cripto['name'], cripto['symbol'], cripto['id']))
-            count += 1
+            else:
+
+                db.insert_data('CRIPTOS_COINMARKETCAP', 'NAME, SYMBOL, ID_COINMARKETCAP', (cripto['name'], cripto['symbol'], cripto['id']))
+                count += 1
+        
+        return count
     
-    db.close()
+    except:
+    
+        db.close()
     

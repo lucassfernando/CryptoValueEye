@@ -3,6 +3,7 @@ import decimal
 from time import sleep
 import json
 import threading
+import logging
 
 from sqlite_database_manager import DataBase
 from telegram_manager import BotTelegram
@@ -57,20 +58,40 @@ def start_check(cripto_id, cripto_name):
 
     except Exception as erro:
 
-        pass
+        logging.error(f'analyze crypto {cripto_name} | error: {error}')
 
 bot = BotTelegram()
+logging.basicConfig(level=logging.DEBUG, filename='register.log', format='%(asctime)s - %(levelname)s - %(message)s')
 
 while True:
 
-    update_reference_db_coinmarketcap()
+    try:
+
+        logging.debug('init database update')
+        tokens_added = update_reference_db_coinmarketcap()
+
+        if int(tokens_added) > 0:
+            bot.send_message(-4148057761, f'TOKENS ADDED IN DATABASE: {tokens_added}')
+
+        logging.debug('finishing database update')
     
+    except Exception as error:
+        
+        logging.error(f'error database update: {error}')
+
     db = DataBase('CRIPTOS_INFO.db')
     all_cripto_data = db.consult_all_information('CRIPTOS_COINMARKETCAP')
     db.close()
+    logging.debug('function consult_all_information concluded')
 
-    for information in all_cripto_data:
+    try:
 
-        thread = threading.Thread(target=start_check, args=(information[2], information[0],))
-        thread.start()
-        sleep(0.2)
+        for information in all_cripto_data:
+
+            thread = threading.Thread(target=start_check, args=(information[2], information[0],))
+            thread.start()
+            sleep(0.2)
+    
+    except Exception as error:
+
+        logging.error(f'threading error in crypto: {information[0]} | error: {error}')

@@ -13,8 +13,8 @@ class BotTelegram:
         else:
             load_dotenv()
             self.token_api = os.getenv('TELEGRAM_TOKEN')
-        self.bot = telebot.TeleBot(self.token_api)
+        self.bot = telebot.TeleBot(self.token_api)       
 
     def send_message(self, chat_id, message):
         self.bot.send_message(chat_id, message)
-
+    
