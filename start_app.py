@@ -17,10 +17,16 @@ def monitor_climb(json, hours_ago, selected_percentage, return_text):
     closed_cripto_value = json['data']['quotes'][-1]['quote']['close']  
     high_percentage = percentage_calculated(float(opened_cripto_value), float(closed_cripto_value))
 
-    if high_percentage >= selected_percentage:
-        return f'{return_text}: {"%.2f" % high_percentage}% ✅'
+    if high_percentage:
+
+        if high_percentage >= selected_percentage:
+            return f'{return_text}: {"%.2f" % high_percentage}% ✅'
+        else:
+            return f'{return_text}: {"%.2f" % high_percentage}% ❌'
+    
     else:
-        return f'{return_text}: {"%.2f" % high_percentage}% ❌'
+
+        return f'{return_text}: MOEDA DESPENCOU ❌'
 
 def percentage_calculated(initial_value, final_value):
 
@@ -56,9 +62,9 @@ def start_check(cripto_id, cripto_name):
 
                 bot.send_message(-4148057761, f"TOKEN: {cripto_name}\n\n{return_analyze_total}")
 
-    except Exception as erro:
+    except Exception as error:
 
-        logging.error(f'analyze crypto {cripto_name} | error: {error}')
+        logging.error(f'analyze CRYPTO: {cripto_name} ID: {cripto_id} | error: {error}')
 
 bot = BotTelegram()
 logging.basicConfig(level=logging.DEBUG, filename='register.log', format='%(asctime)s - %(levelname)s - %(message)s')
